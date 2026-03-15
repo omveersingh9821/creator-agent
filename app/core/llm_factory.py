@@ -65,8 +65,8 @@ def get_llm() -> BaseChatModel:
         from pydantic import SecretStr  # pyre-ignore[21]
         from langchain_anthropic import ChatAnthropic  # pyre-ignore[21]
 
-        # Use the user-provided MODEL_NAME or default to sonnet 3.5
-        model_to_use = MODEL_NAME if MODEL_NAME != "gemini-2.0-flash" else "claude-3-5-sonnet-latest"
+        # Use the user-provided MODEL_NAME or default to sonnet 3.5 (Oct 2024 version)
+        model_to_use = MODEL_NAME if MODEL_NAME != "gemini-2.0-flash" else "claude-3-5-sonnet-20241022"
         return ChatAnthropic(
             model_name=model_to_use,
             api_key=SecretStr(ANTHROPIC_API_KEY),
