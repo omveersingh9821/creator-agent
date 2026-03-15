@@ -6,7 +6,7 @@ which is the supported replacement for the legacy
 `structured-chat-zero-shot-react-description` agent type.
 """
 
-from langchain.agents import AgentExecutor, create_structured_chat_agent  # pyre-ignore[21]
+from langchain.agents import AgentExecutor, create_tool_calling_agent  # pyre-ignore[21]
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder  # pyre-ignore[21]
 
 from app.config.settings import AGENT_MAX_ITERATIONS, VERBOSE  # pyre-ignore[21]
@@ -22,19 +22,17 @@ from app.tools.research_tool import research_trending_topics  # pyre-ignore[21]
 
 
 def _build_prompt() -> ChatPromptTemplate:
-    """Build the structured-chat prompt template.
+    """Build the tool-calling prompt template.
 
     The prompt includes the system message, a placeholder for chat history,
-    the human input, and a scratchpad for agent reasoning steps.
+    the human input, and a scratchpad for agent reasoning steps (tool calls).
     """
     return ChatPromptTemplate.from_messages(
         [
             ("system", AGENT_SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="chat_history", optional=True),
-            (
-                "human",
-                "{input}\n\n{agent_scratchpad}",
-            ),
+            ("human", "{input}"),
+            MessagesPlaceholder(variable_name="agent_scratchpad"),
         ]
     )
 
@@ -57,7 +55,7 @@ def create_agent() -> AgentExecutor:
 
     prompt = _build_prompt()
 
-    agent = create_structured_chat_agent(
+    agent = create_tool_calling_agent(
         llm=llm,
         tools=tools,
         prompt=prompt,

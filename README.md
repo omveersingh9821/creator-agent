@@ -71,9 +71,16 @@ CreatorAgent/
 │   │   ├── reel_tool.py
 │   │   ├── image_idea_tool.py
 │   │   └── research_tool.py
+│   ├── api.py                # FastAPI web server
 │   └── main.py               # CLI entry point
+├── web/                      # React + TypeScript frontend
+│   ├── src/
+│   │   ├── App.tsx
+│   │   └── index.css
+│   └── package.json
 ├── tests/
-│   └── test_agent.py
+│   ├── test_agent.py
+│   └── test_api.py
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
@@ -129,6 +136,10 @@ MODEL_NAME=gemini-2.0-flash
 
 ## 🚀 Running the Agent
 
+There are **two ways** to use Creator Agent:
+
+### Option A — CLI Mode
+
 ```bash
 python app/main.py
 ```
@@ -145,6 +156,29 @@ You'll see an interactive prompt:
 
 You ▸
 ```
+
+### Option B — Web UI (React + FastAPI)
+
+Start **two terminals**:
+
+**Terminal 1 — Backend API:**
+
+```bash
+source venv/bin/activate
+uvicorn app.api:app --reload --port 8000
+```
+
+**Terminal 2 — Frontend Dev Server:**
+
+```bash
+cd web
+npm install   # first time only
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+> **Note:** The backend runs on port `8000` and the frontend on port `5173`. CORS is pre-configured.
 
 ---
 
@@ -191,10 +225,16 @@ AI dashboard (cool blue-purple gradient)…
 ## 🧪 Running Tests
 
 ```bash
+source venv/bin/activate
 python -m pytest tests/ -v
 ```
 
-Tests run **without an API key** — they validate configuration, tool definitions, and prompt templates.
+Tests run **without an API key** — the agent is mocked.
+
+| Test File | What It Covers |
+|---|---|
+| `test_agent.py` | Settings, LLM factory, tool definitions, prompt templates |
+| `test_api.py` | Health endpoint, `/api/generate` (happy path, validation, errors), Pydantic models |
 
 ---
 

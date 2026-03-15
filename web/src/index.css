@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* ════════════════════════════════════════════════════════════════════════════
+   GitHub-inspired Dark / Light theming via data-theme attribute
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── DARK (default) ─────────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --c-canvas:       #0d1117;
+  --c-surface:      #161b22;
+  --c-raised:       #1c2128;
+  --c-overlay:      #2d333b;
+  --c-border:       #30363d;
+  --c-border-muted: #21262d;
+
+  --c-text:         #e6edf3;
+  --c-text-muted:   #7d8590;
+  --c-text-subtle:  #484f58;
+
+  --c-green:        #3fb950;
+  --c-green-muted:  #238636;
+  --c-blue:         #58a6ff;
+  --c-purple:       #bc8cff;
+  --c-pink:         #f778ba;
+  --c-orange:       #d29922;
+  --c-red:          #f85149;
+  --c-cyan:         #76e3ea;
+}
+
+/* ── LIGHT ──────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --c-canvas:       #ffffff;
+  --c-surface:      #f6f8fa;
+  --c-raised:       #eaeef2;
+  --c-overlay:      #d0d7de;
+  --c-border:       #d0d7de;
+  --c-border-muted: #dfe3e8;
+
+  --c-text:         #1f2328;
+  --c-text-muted:   #656d76;
+  --c-text-subtle:  #8b949e;
+
+  --c-green:        #1a7f37;
+  --c-green-muted:  #2da44e;
+  --c-blue:         #0969da;
+  --c-purple:       #8250df;
+  --c-pink:         #bf3989;
+  --c-orange:       #9a6700;
+  --c-red:          #cf222e;
+  --c-cyan:         #0d7d8d;
+}
+
+@layer base {
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+  body {
+    background-color: var(--c-canvas);
+    color: var(--c-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--c-text-subtle); }
+}
