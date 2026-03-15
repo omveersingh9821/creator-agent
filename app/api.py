@@ -7,7 +7,7 @@ Run with:
 """
 
 import sys
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from fastapi import FastAPI, HTTPException  # pyre-ignore[21]
 from fastapi.middleware.cors import CORSMiddleware  # pyre-ignore[21]
@@ -143,6 +143,116 @@ async def generate_structured_content(
             blog=blog_text.strip(),
         )
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── MongoDB persistence ──────────────────────────────────────────────────────
+
+from app.db.mongodb import (  # pyre-ignore[21]
+    increment_global_usage,
+    save_user_request,
+    save_user_result,
+    get_global_usage,
+    get_user_requests,
+    get_user_results,
+)
+
+
+class GenerateContentRequest(BaseModel):
+    topic: str
+    uid: Optional[str] = None
+    email: Optional[str] = None
+    display_name: Optional[str] = None
+
+
+@app.post("/api/generate-content-v2", response_model=StructuredContentResponse)
+async def generate_structured_content_v2(
+    request: GenerateContentRequest,
+) -> StructuredContentResponse:
+    """Generate structured content AND persist usage/results to MongoDB."""
+    try:
+        caption_text: str = generate_caption.invoke(request.topic)
+        hashtags_text: str = generate_hashtags.invoke(request.topic)
+        reel_text: str = generate_reel_script.invoke(request.topic)
+        image_text: str = generate_image_idea.invoke(request.topic)
+
+        from app.core.llm_factory import get_llm  # pyre-ignore[21]
+        llm = get_llm()
+        blog_result = llm.invoke(
+            f"Write a short, engaging blog post (200-300 words) about: {request.topic}. "
+            "Use a friendly, conversational tone. Return only the blog text."
+        )
+        blog_text = str(blog_result.content) if hasattr(blog_result, "content") else str(blog_result)
+
+        hashtag_list = [
+            tag.strip()
+            for tag in hashtags_text.replace(",", "\n").split("\n")
+            if tag.strip().startswith("#")
+        ]
+
+        # ── Save to MongoDB ──
+        try:
+            await increment_global_usage(tokens_used=1250)
+
+            if request.uid:
+                await save_user_request(
+                    uid=request.uid,
+                    topic=request.topic,
+                    email=request.email or "",
+                    display_name=request.display_name or "",
+                )
+                await save_user_result(
+                    uid=request.uid,
+                    result={
+                        "topic": request.topic,
+                        "caption": caption_text.strip(),
+                        "hashtags": hashtag_list,
+                        "reel_script": reel_text.strip(),
+                        "image_idea": image_text.strip(),
+                        "blog": blog_text.strip(),
+                    },
+                )
+        except Exception as db_err:
+            print(f"Warning: MongoDB save failed: {db_err}")
+
+        return StructuredContentResponse(
+            caption=caption_text.strip(),
+            hashtags=hashtag_list,
+            reel_script=reel_text.strip(),
+            image_idea=image_text.strip(),
+            blog=blog_text.strip(),
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── MongoDB Read Endpoints ───────────────────────────────────────────────────
+
+@app.get("/api/usage")
+async def api_usage() -> Dict[str, Any]:
+    """Return global usage stats."""
+    try:
+        return await get_global_usage()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/user/{uid}/requests")
+async def api_user_requests(uid: str) -> Dict[str, Any]:
+    """Return recent requests for a user."""
+    try:
+        return await get_user_requests(uid)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/user/{uid}/results")
+async def api_user_results(uid: str) -> Dict[str, Any]:
+    """Return recent 5 results for a user."""
+    try:
+        return await get_user_results(uid)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -31,3 +31,7 @@ TEMPERATURE: float = float(os.getenv("TEMPERATURE") or "0.7")
 # ── Agent Settings ────────────────────────────────────────────────────────────
 AGENT_MAX_ITERATIONS: int = int(os.getenv("AGENT_MAX_ITERATIONS") or "10")
 VERBOSE: bool = (os.getenv("VERBOSE") or "true").lower() == "true"
+
+# ── Database ──────────────────────────────────────────────────────────────────
+MONGODB_URI: str = os.getenv("MONGODB_URI") or ""
+
