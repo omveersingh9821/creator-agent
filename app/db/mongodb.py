@@ -48,7 +48,7 @@ def _get_db():
                 "MONGODB_URI is not set. Add it to your .env file."
             )
         _client = AsyncIOMotorClient(MONGODB_URI)
-        _db = _client.get_default_database("creator_agent")
+        _db = _client["creator_agent"]
     return _db
 
 
