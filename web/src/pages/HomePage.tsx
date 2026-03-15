@@ -3,9 +3,9 @@
  *
  * Sidebar nav items control which page is displayed in the main area:
  *   - Workspace (default): topic input + generated content
- *   - Usage: API stats dashboard
+ *   - Usage: API stats dashboard (fetched from MongoDB)
  *   - Prompts: recommended prompt library
- *   - Recent Requests: generation history list
+ *   - Recent Requests: generation history list (fetched from MongoDB)
  */
 
 import { useState } from "react";
@@ -25,17 +25,22 @@ import { UsagePage } from "./UsagePage";
 import { PromptsPage } from "./PromptsPage";
 import { RecentRequestsPage } from "./RecentRequestsPage";
 import { useGenerateContent } from "../hooks/useGenerateContent";
+import { useAuth } from "../auth/AuthContext";
 
 export function HomePage() {
   const { mutate, data, isPending, error } = useGenerateContent();
+  const { user } = useAuth();
   const [topicOverride, setTopicOverride] = useState("");
-  const [generatedTopics, setGeneratedTopics] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activePage, setActivePage] = useState<PageId>("workspace");
 
   const handleGenerate = (topic: string) => {
-    setGeneratedTopics((prev) => [topic, ...prev.slice(0, 19)]);
-    mutate(topic);
+    mutate({
+      topic,
+      uid: user?.uid,
+      email: user?.email ?? undefined,
+      display_name: user?.displayName ?? undefined,
+    });
   };
 
   const handleSelectPrompt = (prompt: string) => {
@@ -132,29 +137,17 @@ export function HomePage() {
               </div>
             )}
 
-            {/* ════ USAGE PAGE ════ */}
-            {activePage === "usage" && (
-              <UsagePage
-                totalRequests={generatedTopics.length}
-                model="gpt-4o"
-                recentRequests={generatedTopics}
-              />
-            )}
+            {/* ════ USAGE PAGE (live from MongoDB) ════ */}
+            {activePage === "usage" && <UsagePage />}
 
             {/* ════ PROMPTS PAGE ════ */}
             {activePage === "prompts" && (
-              <PromptsPage
-                onSelectPrompt={handleSelectPrompt}
-                recentPrompts={generatedTopics}
-              />
+              <PromptsPage onSelectPrompt={handleSelectPrompt} />
             )}
 
-            {/* ════ RECENT REQUESTS PAGE ════ */}
+            {/* ════ RECENT REQUESTS PAGE (live from MongoDB) ════ */}
             {activePage === "recent" && (
-              <RecentRequestsPage
-                requests={generatedTopics}
-                onSelectTopic={handleSelectTopic}
-              />
+              <RecentRequestsPage onSelectTopic={handleSelectTopic} />
             )}
 
           </div>
@@ -166,3 +159,4 @@ export function HomePage() {
     </div>
   );
 }
+

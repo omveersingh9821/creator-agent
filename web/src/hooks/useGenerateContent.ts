@@ -9,18 +9,25 @@ import { useMutation } from "@tanstack/react-query";
 import { generateContent } from "../services/api";
 import type { GeneratedContent } from "../types/content";
 
+interface GenerateInput {
+  topic: string;
+  uid?: string;
+  email?: string;
+  display_name?: string;
+}
+
 /**
  * Custom hook to trigger content generation.
  *
  * Usage:
  * ```tsx
  * const { mutate, data, isPending, error } = useGenerateContent();
- * mutate("morning routine tips");
+ * mutate({ topic: "morning routine tips", uid: "abc123" });
  * ```
  */
 export function useGenerateContent() {
-  return useMutation<GeneratedContent, Error, string>({
-    /** Maps the topic string to the API request shape. */
-    mutationFn: (topic: string) => generateContent({ topic }),
+  return useMutation<GeneratedContent, Error, GenerateInput>({
+    /** Maps the input object to the API request shape. */
+    mutationFn: (input: GenerateInput) => generateContent(input),
   });
 }

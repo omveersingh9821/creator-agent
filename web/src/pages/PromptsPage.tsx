@@ -1,15 +1,27 @@
 /**
- * PromptsPage — full-page wrapper around PromptsTab for sidebar navigation.
+ * PromptsPage — recommended prompts + recent prompts fetched from MongoDB.
  */
 
+import { useEffect, useState } from "react";
 import { PromptsTab } from "../components/tabs/PromptsTab";
+import { useAuth } from "../auth/AuthContext";
+import { fetchUserRequests } from "../services/api";
 
 interface PromptsPageProps {
   onSelectPrompt: (prompt: string) => void;
-  recentPrompts: string[];
 }
 
-export function PromptsPage({ onSelectPrompt, recentPrompts }: PromptsPageProps) {
+export function PromptsPage({ onSelectPrompt }: PromptsPageProps) {
+  const { user } = useAuth();
+  const [recentPrompts, setRecentPrompts] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    fetchUserRequests(user.uid)
+      .then((res) => setRecentPrompts((res.recent_requests ?? []).map((r) => r.topic)))
+      .catch((err) => console.error("Failed to fetch recent prompts:", err));
+  }, [user?.uid]);
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
       <header>

@@ -9,5 +9,5 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
-/** Endpoint path for structured content generation. */
-export const GENERATE_CONTENT_ENDPOINT = "/api/generate-content";
+/** Endpoint path for structured content generation (MongoDB-backed). */
+export const GENERATE_CONTENT_ENDPOINT = "/api/generate-content-v2";

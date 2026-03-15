@@ -1,18 +1,48 @@
 /**
- * RecentRequestsPage — full-page view of recent generation requests.
+ * RecentRequestsPage — fetches LIVE recent requests from MongoDB via the API.
  */
 
+import { useEffect, useState } from "react";
 import { Clock, ArrowRight } from "lucide-react";
+import { useAuth } from "../auth/AuthContext";
+import { fetchUserRequests, type UserRequest } from "../services/api";
 
 interface RecentRequestsPageProps {
-  requests: string[];
   onSelectTopic: (topic: string) => void;
 }
 
-export function RecentRequestsPage({ requests, onSelectTopic }: RecentRequestsPageProps) {
+export function RecentRequestsPage({ onSelectTopic }: RecentRequestsPageProps) {
+  const { user } = useAuth();
+  const [requests, setRequests] = useState<UserRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.uid) {
+      setLoading(false);
+      return;
+    }
+    fetchUserRequests(user.uid)
+      .then((res) => setRequests(res.recent_requests ?? []))
+      .catch((err) => console.error("Failed to fetch requests:", err))
+      .finally(() => setLoading(false));
+  }, [user?.uid]);
+
+  if (loading) {
+    return (
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
+        <header>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--c-text)" }}>Recent Requests</h1>
+          <p className="mt-1 text-[14px]" style={{ color: "var(--c-text-muted)" }}>Loading your requests...</p>
+        </header>
+        <div className="flex items-center justify-center py-12">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--c-border-muted)", borderTopColor: "var(--c-green)" }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
-      {/* Header */}
       <header>
         <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--c-text)" }}>
           Recent Requests
@@ -22,19 +52,11 @@ export function RecentRequestsPage({ requests, onSelectTopic }: RecentRequestsPa
         </p>
       </header>
 
-      {/* List */}
-      <div
-        className="overflow-hidden rounded-lg"
-        style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}
-      >
+      <div className="overflow-hidden rounded-lg" style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}>
         <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid var(--c-border)" }}>
           <Clock className="h-4 w-4" style={{ color: "var(--c-text-subtle)" }} />
-          <span className="text-[13px] font-semibold" style={{ color: "var(--c-text)" }}>
-            All Requests
-          </span>
-          <span className="text-[12px]" style={{ color: "var(--c-text-subtle)" }}>
-            ({requests.length})
-          </span>
+          <span className="text-[13px] font-semibold" style={{ color: "var(--c-text)" }}>All Requests</span>
+          <span className="text-[12px]" style={{ color: "var(--c-text-subtle)" }}>({requests.length})</span>
         </div>
 
         {requests.length === 0 ? (
@@ -43,10 +65,10 @@ export function RecentRequestsPage({ requests, onSelectTopic }: RecentRequestsPa
           </p>
         ) : (
           <div className="divide-y" style={{ borderColor: "var(--c-border-muted)" }}>
-            {requests.map((topic, i) => (
+            {requests.map((req, i) => (
               <button
                 key={i}
-                onClick={() => onSelectTopic(topic)}
+                onClick={() => onSelectTopic(req.topic)}
                 className="flex w-full items-center gap-3 px-4 py-3 text-left text-[13px] transition-colors"
                 style={{ cursor: "pointer" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "var(--c-raised)"; }}
@@ -59,9 +81,12 @@ export function RecentRequestsPage({ requests, onSelectTopic }: RecentRequestsPa
                   {i + 1}
                 </span>
                 <span className="flex-1 truncate" style={{ color: "var(--c-text-muted)" }}>
-                  {topic}
+                  {req.topic}
                 </span>
-                <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" style={{ color: "var(--c-text-subtle)" }} />
+                <span className="text-[11px] shrink-0" style={{ color: "var(--c-text-subtle)" }}>
+                  {new Date(req.timestamp).toLocaleDateString()}
+                </span>
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-40" style={{ color: "var(--c-text-subtle)" }} />
               </button>
             ))}
           </div>
