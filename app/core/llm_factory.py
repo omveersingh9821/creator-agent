@@ -13,6 +13,7 @@ from app.config.settings import (  # pyre-ignore[21]
     LLM_PROVIDER,
     MODEL_NAME,
     OPENAI_API_KEY,
+    ANTHROPIC_API_KEY,
     TEMPERATURE,
 )
 
@@ -55,8 +56,25 @@ def get_llm() -> BaseChatModel:
             temperature=TEMPERATURE,
         )
 
+    elif LLM_PROVIDER == "anthropic":
+        if not ANTHROPIC_API_KEY:
+            raise ValueError(
+                "ANTHROPIC_API_KEY is required when LLM_PROVIDER='anthropic'. "
+                "Set it in your .env file."
+            )
+        from pydantic import SecretStr  # pyre-ignore[21]
+        from langchain_anthropic import ChatAnthropic  # pyre-ignore[21]
+
+        # Use the user-provided MODEL_NAME or default to sonnet 3.5
+        model_to_use = MODEL_NAME if MODEL_NAME != "gemini-2.0-flash" else "claude-3-5-sonnet-latest"
+        return ChatAnthropic(
+            model_name=model_to_use,
+            api_key=SecretStr(ANTHROPIC_API_KEY),
+            temperature=TEMPERATURE,
+        )
+
     else:
         raise ValueError(
             f"Unsupported LLM_PROVIDER='{LLM_PROVIDER}'. "
-            "Choose 'gemini' or 'openai'."
+            "Choose 'gemini', 'openai', or 'anthropic'."
         )

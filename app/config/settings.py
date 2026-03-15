@@ -16,12 +16,13 @@ load_dotenv(_PROJECT_ROOT / ".env")
 
 
 # ── LLM Provider ─────────────────────────────────────────────────────────────
-# Supported values: "gemini", "openai"
+# Supported values: "gemini", "openai", "anthropic"
 LLM_PROVIDER: str = (os.getenv("LLM_PROVIDER") or "gemini").lower()
 
 # ── API Keys ──────────────────────────────────────────────────────────────────
 GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY") or ""
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY") or ""
+ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY") or ""
 
 # ── Model Parameters ─────────────────────────────────────────────────────────
 MODEL_NAME: str = os.getenv("MODEL_NAME") or "gemini-2.0-flash"
