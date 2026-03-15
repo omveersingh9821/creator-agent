@@ -19,6 +19,14 @@
       "dest": "/api/index.py"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/web/assets/$1"
+    },
+    {
+      "src": "/favicon.svg",
+      "dest": "/web/favicon.svg"
+    },
+    {
       "handle": "filesystem"
     },
     {
