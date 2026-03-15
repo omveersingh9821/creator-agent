@@ -15,7 +15,7 @@ import { Sidebar, type PageId } from "../components/Sidebar";
 import { TopicInput } from "../components/TopicInput";
 import { Loader } from "../components/ui/Loader";
 import { StatsBar } from "../components/ui/StatsBar";
-import { Footer } from "../components/ui/Footer";
+// import { Footer } from "../components/ui/Footer";
 import { CaptionCard } from "../components/content/CaptionCard";
 import { HashtagCard } from "../components/content/HashtagCard";
 import { ReelScriptCard } from "../components/content/ReelScriptCard";
@@ -153,7 +153,7 @@ export function HomePage() {
           </div>
 
           {/* Footer */}
-          <Footer />
+          {/* <Footer /> */}
         </main>
       </div>
     </div>
