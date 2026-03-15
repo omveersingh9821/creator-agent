@@ -1,0 +1,240 @@
+You are a senior AI engineer and Python architect.
+
+Build a production-quality AI agent project called Creator Agent.
+
+The agent should generate Instagram content automatically using LangChain tools.
+
+The project must follow industry-level best practices and clean architecture.
+
+Use Python, LangChain, and Gemini (Google Generative AI) or any other LLM.
+Making the LLM configurable is exactly how production AI systems are designed. You should be able to switch between Gemini / OpenAI just by changing a configuration value.
+
+----------------------------------------
+
+PROJECT GOAL
+
+Create an AI agent that can generate Instagram content including:
+
+1. Instagram captions
+2. Hashtags
+3. Reel scripts
+4. Image ideas
+5. Topic research
+
+Build an AI agent that first researches trending topics, selects a positive topic, and then generates Instagram content. The output should include an engaging caption, relevant hashtags, a reel script, an image idea, and a short blog post.
+
+The agent should use structured tools and the LangChain agent framework.
+
+----------------------------------------
+
+TECH STACK
+
+Python
+LangChain
+LangChain Core
+LangChain Google GenAI
+Python dotenv
+DuckDuckGo search tool
+
+----------------------------------------
+
+DIRECTORY STRUCTURE
+
+Use this production-level folder structure:
+
+project-root
+│
+├── app
+│   ├── agent
+│   │   └── agent.py
+│   │
+│   ├── config
+│   │   └── settings.py
+│   │
+│   ├── tools
+│   │   ├── caption_tool.py
+│   │   ├── hashtag_tool.py
+│   │   ├── reel_tool.py
+│   │   ├── image_idea_tool.py
+│   │   └── research_tool.py
+│   │
+│   ├── prompts
+│   │   └── prompts.py
+│   │
+│   ├── core
+│   │   └── llm_factory.py
+│   │
+│   └── main.py
+│
+├── tests
+│   └── test_agent.py
+│
+├── requirements.txt
+├── .env.example
+├── README.md
+└── .gitignore
+
+----------------------------------------
+
+AGENT DESIGN
+
+The agent must use:
+
+structured-chat-zero-shot-react-description
+
+because tools will have typed inputs.
+
+Agent workflow:
+
+User input
+↓
+Agent reasoning
+↓
+Tool selection
+↓
+Tool execution
+↓
+Final Instagram content output
+
+----------------------------------------
+
+TOOLS TO IMPLEMENT
+
+Create LangChain tools for:
+
+1. Caption Generator
+Generate engaging Instagram captions.
+
+2. Hashtag Generator
+Generate relevant Instagram hashtags.
+
+3. Reel Script Generator
+Generate short Instagram reel scripts.
+
+4. Image Idea Generator
+Suggest image concepts for Instagram posts.
+
+5. Research Tool
+Search the internet for trending topics.
+
+Each tool must:
+
+• use @tool decorator
+• include a clear docstring
+• define typed inputs
+• return clean output
+
+----------------------------------------
+
+LLM CONFIGURATION
+
+Create a file:
+
+core/llm.py
+
+Initialize Gemini model:
+
+ChatGoogleGenerativeAI
+
+Load API key using dotenv.
+
+----------------------------------------
+
+MAIN FILE
+
+main.py should:
+
+• load the agent
+• run a CLI loop
+• allow users to enter content ideas
+
+Example interaction:
+
+User:
+Create an Instagram post about AI agents.
+
+Agent output:
+Caption
+Hashtags
+Reel script
+Image idea
+
+----------------------------------------
+
+CODE QUALITY
+
+The generated code must:
+
+• follow clean Python practices
+• include comments
+• separate responsibilities
+• use clear function names
+• include docstrings
+• avoid large monolithic files
+
+----------------------------------------
+
+README REQUIREMENTS
+
+Create a high-quality README.md including:
+
+1. Project Overview
+Explain what the AI Instagram Content Creator Agent is.
+
+2. Features
+Caption generation
+Hashtag generation
+Reel scripts
+Image ideas
+Trend research
+
+3. Architecture
+Explain the agent + tool workflow.
+
+4. Installation Guide
+Python setup
+Virtual environment
+Install dependencies
+Add API key
+
+5. Running the Project
+
+Example:
+
+python app/main.py
+
+6. Example Usage
+
+User prompt:
+Create an Instagram post about AI automation.
+
+Show example output.
+
+7. Future Improvements
+Instagram API automation
+Image generation
+Analytics
+
+----------------------------------------
+
+EXTRA REQUIREMENTS
+
+Make the code beginner-friendly but production structured.
+
+Add helpful comments.
+
+Ensure imports work with latest LangChain versions.
+
+----------------------------------------
+
+OUTPUT FORMAT
+
+Generate:
+
+1. Full directory structure
+2. Code for every file
+3. requirements.txt
+4. .env.example
+5. Complete README.md
+
+Ensure everything is readable and well formatted.
