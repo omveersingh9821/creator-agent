@@ -1,9 +1,10 @@
 /**
  * HomePage — fully responsive dashboard with Navbar + Sidebar + Workspace + Footer.
+ * Includes Usage / Prompts tabs below the topic input area.
  */
 
 import { useState } from "react";
-import { Zap, AlertTriangle } from "lucide-react";
+import { Zap, AlertTriangle, BarChart3, MessageSquareText } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Sidebar } from "../components/Sidebar";
 import { TopicInput } from "../components/TopicInput";
@@ -15,17 +16,30 @@ import { HashtagCard } from "../components/content/HashtagCard";
 import { ReelScriptCard } from "../components/content/ReelScriptCard";
 import { ImageIdeaCard } from "../components/content/ImageIdeaCard";
 import { BlogCard } from "../components/content/BlogCard";
+import { Tabs } from "../components/tabs/Tabs";
+import { UsageTab } from "../components/tabs/UsageTab";
+import { PromptsTab } from "../components/tabs/PromptsTab";
 import { useGenerateContent } from "../hooks/useGenerateContent";
+
+const TAB_DEFINITIONS = [
+  { id: "usage", label: "Usage", icon: <BarChart3 className="h-4 w-4" /> },
+  { id: "prompts", label: "Prompts", icon: <MessageSquareText className="h-4 w-4" /> },
+];
 
 export function HomePage() {
   const { mutate, data, isPending, error } = useGenerateContent();
   const [topicOverride, setTopicOverride] = useState("");
   const [generatedTopics, setGeneratedTopics] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("usage");
 
   const handleGenerate = (topic: string) => {
     setGeneratedTopics((prev) => [topic, ...prev.slice(0, 9)]);
     mutate(topic);
+  };
+
+  const handleSelectPrompt = (prompt: string) => {
+    setTopicOverride(prompt);
   };
 
   return (
@@ -76,6 +90,24 @@ export function HomePage() {
                 externalTopic={topicOverride}
                 onExternalTopicConsumed={() => setTopicOverride("")}
               />
+
+              {/* ── Tabs: Usage / Prompts ── */}
+              <Tabs tabs={TAB_DEFINITIONS} activeTab={activeTab} onTabChange={setActiveTab} />
+
+              {activeTab === "usage" && (
+                <UsageTab
+                  totalRequests={generatedTopics.length}
+                  model="gpt-4o"
+                  recentRequests={generatedTopics}
+                />
+              )}
+
+              {activeTab === "prompts" && (
+                <PromptsTab
+                  onSelectPrompt={handleSelectPrompt}
+                  recentPrompts={generatedTopics}
+                />
+              )}
 
               {/* Error */}
               {error && (
