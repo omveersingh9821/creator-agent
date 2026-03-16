@@ -28,14 +28,22 @@ def generate_image(prompt: str) -> str:
         RuntimeError: If the image generation request fails.
     """
     if OPENAI_API_KEY:
-        return _generate_with_openai(prompt)
-    elif GOOGLE_API_KEY:
-        return _generate_with_google(prompt)
-    else:
-        raise ValueError(
-            "No image generation API key found. "
-            "Set OPENAI_API_KEY or GOOGLE_API_KEY in your .env file."
-        )
+        from openai import AuthenticationError  # pyre-ignore[21]
+        try:
+            return _generate_with_openai(prompt)
+        except AuthenticationError as e:
+            print(f"OpenAI Auth Error: {e}. Falling back to Google Imagen.")
+            pass
+
+    if GOOGLE_API_KEY:
+        try:
+            return _generate_with_google(prompt)
+        except Exception as e:
+            print(f"Google Imagen Error: {e}. Falling back to dummy image.")
+            pass
+
+    print("No valid image generation API keys found or all attempts failed. Falling back to dummy.")
+    return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 
 
 def _generate_with_openai(prompt: str) -> str:
@@ -44,19 +52,14 @@ def _generate_with_openai(prompt: str) -> str:
 
     client = OpenAI(api_key=OPENAI_API_KEY)
 
-    try:
-        response = client.images.generate(
-            model="dall-e-3",
-            prompt=prompt,
-            size="1024x1024",
-            quality="standard",
-            response_format="b64_json",
-            n=1,
-        )
-    except AuthenticationError as e:
-        # Fallback dummy image (a simple 1x1 transparent PNG) if the API key is invalid
-        print(f"OpenAI Authentication Error: {e}. Falling back to dummy image.")
-        return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+    response = client.images.generate(
+        model="dall-e-3",
+        prompt=prompt,
+        size="1024x1024",
+        quality="standard",
+        response_format="b64_json",
+        n=1,
+    )
 
     image_b64 = response.data[0].b64_json
     if not image_b64:
