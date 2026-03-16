@@ -350,7 +350,10 @@ async def generate_travel_itinerary(request: TravelQuery):
         return result_dict
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Travel Agent Error: {str(e)}")
+        import traceback
+        err_msg = traceback.format_exc()
+        print(f"TRAVEL AGENT ERROR POST-DEPLOY: {err_msg}")
+        raise HTTPException(status_code=500, detail=f"Travel Agent Error: {str(e)}\n\nTraceback:\n{err_msg}")
 
 
 @app.post("/api/agents/travel/book", response_model=BookFlightResponse)
