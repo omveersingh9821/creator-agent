@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plane, AlertTriangle, Building2, Banknote } from "lucide-react";
-import { useTravelAgent, useBookFlight, Flight } from "../hooks/useTravelAgent.ts";
+import { useTravelAgent, useBookFlight, type Flight } from "../hooks/useTravelAgent";
 import { Loader } from "../components/ui/Loader";
 
 export function TravelPage() {

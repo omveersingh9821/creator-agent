@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { travelApi } from "../services/travelApi.ts";
+import { travelApi } from "../services/travelApi";
 
 export interface Flight {
   airline: string;
