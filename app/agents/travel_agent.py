@@ -3,7 +3,7 @@ import random
 from typing import List, Dict, Any
 
 from langchain_core.tools import tool
-from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langgraph.prebuilt import create_react_agent  # pyre-ignore[21]
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage
 
@@ -121,26 +121,19 @@ prompt = ChatPromptTemplate.from_messages([
     ("placeholder", "{agent_scratchpad}"),
 ])
 
-def create_travel_agent() -> AgentExecutor:
+def create_travel_agent():
     from app.core.llm_factory import get_llm
     llm = get_llm()
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    return AgentExecutor(agent=agent, tools=tools, verbose=True)
+    # Using langgraph's prebuilt react agent instead of deprecated AgentExecutor
+    return create_react_agent(llm, tools, state_modifier=system_prompt)
 
 def run_travel_agent(query: str) -> Dict[str, Any]:
     agent_executor = create_travel_agent()
     
     try:
-        response = agent_executor.invoke({"input": query})
-        output = response.get("output", "")
-        
-        # Sometime Langchain Anthropic returns a list of blocks like [{"text": "..."}]
-        if isinstance(output, list) and len(output) > 0 and isinstance(output[0], dict) and "text" in output[0]:
-            output_str = output[0]["text"].strip()
-        elif isinstance(output, dict) and "text" in output:
-            output_str = output["text"].strip()
-        else:
-            output_str = str(output).strip()
+        response = agent_executor.invoke({"messages": [("user", query)]})
+        # Original logic extracted from 'output'. In langgraph it's the last message content.
+        output_str = response["messages"][-1].content
             
         # Clean up markdown code blocks if the LLM wrapped the JSON
         if output_str.startswith("```json"):
