@@ -86,18 +86,6 @@ async def health_check() -> Dict[str, str]:
     """Basic health check endpoint."""
     return {"status": "ok"}
 
-@app.get("/api/debug-env")
-async def debug_env() -> Dict[str, Any]:
-    """Temporary endpoint to check env vars on Vercel."""
-    import os
-    return {
-        "LLM_PROVIDER": os.environ.get("LLM_PROVIDER", "NOT_SET"),
-        "HAS_ANTHROPIC_KEY": bool(os.environ.get("ANTHROPIC_API_KEY")),
-        "HAS_OPENAI_KEY": bool(os.environ.get("OPENAI_API_KEY")),
-        "HAS_GOOGLE_KEY": bool(os.environ.get("GOOGLE_API_KEY")),
-        "TAVILY_API_KEY": bool(os.environ.get("TAVILY_API_KEY")),
-    }
-
 
 # ── Structured Content Models ────────────────────────────────────────────────
 
