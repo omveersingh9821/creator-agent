@@ -137,5 +137,44 @@ class TestRequestResponseModels(unittest.TestCase):
         self.assertEqual(resp.result, "some content")
 
 
+class TestImageGenerationEndpoint(unittest.TestCase):
+    """Verify the /api/generate-image endpoint."""
+
+    def setUp(self) -> None:
+        from app.api import app  # pyre-ignore[21]
+        self.client = TestClient(app)
+
+    @patch("app.tools.image_gen_tool.generate_image")
+    def test_generate_image_returns_200(self, mock_gen: MagicMock) -> None:
+        """POST /api/generate-image with a valid prompt should return 200."""
+        mock_gen.return_value = "iVBORw0KGgoAAAANSUhEUg=="  # fake base64
+        response = self.client.post(
+            "/api/generate-image",
+            json={"prompt": "a cute cat"},
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("image_base64", data)
+        self.assertIn("prompt", data)
+        self.assertEqual(data["prompt"], "a cute cat")
+        self.assertEqual(data["image_base64"], "iVBORw0KGgoAAAANSUhEUg==")
+
+    def test_generate_image_rejects_missing_prompt(self) -> None:
+        """POST /api/generate-image without 'prompt' should return 422."""
+        response = self.client.post("/api/generate-image", json={})
+        self.assertEqual(response.status_code, 422)
+
+    @patch("app.tools.image_gen_tool.generate_image")
+    def test_generate_image_returns_500_on_error(self, mock_gen: MagicMock) -> None:
+        """If image generation fails, the endpoint should return 500."""
+        mock_gen.side_effect = RuntimeError("Image API down")
+        response = self.client.post(
+            "/api/generate-image",
+            json={"prompt": "test"},
+        )
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("Image API down", response.json()["detail"])
+
+
 if __name__ == "__main__":
     unittest.main()

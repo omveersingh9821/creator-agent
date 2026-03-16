@@ -1,31 +1,52 @@
 /**
  * Sidebar — responsive, collapsible on mobile via overlay.
- * Nav items: Workspace, Usage, Prompts, Recent Requests, Settings.
- * Clicking a nav item fires onNavigate to switch the main page.
+ * Nav items: Workspace, Image Generation, Usage, Prompts, Recent Requests, Settings.
+ * Uses react-router-dom for URL-based navigation.
  */
 
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   BarChart3,
   MessageSquareText,
   History,
   Settings,
+  ImagePlus,
 } from "lucide-react";
 
-export type PageId = "workspace" | "usage" | "prompts" | "recent";
+export type PageId = "workspace" | "image-generation" | "usage" | "prompts" | "recent";
+
+/** Map each page ID to its URL path. */
+const PAGE_PATHS: Record<PageId, string> = {
+  workspace: "/",
+  "image-generation": "/image-generation",
+  usage: "/usage",
+  prompts: "/prompts",
+  recent: "/recent",
+};
+
+/** Reverse mapping from path to page ID. */
+function getActivePageFromPath(pathname: string): PageId {
+  for (const [id, path] of Object.entries(PAGE_PATHS)) {
+    if (path === pathname) return id as PageId;
+  }
+  return "workspace";
+}
 
 interface SidebarProps {
-  activePage: PageId;
-  onNavigate: (page: PageId) => void;
   /** Whether the sidebar is open (mobile). */
   open: boolean;
   /** Close the sidebar (mobile). */
   onClose: () => void;
 }
 
-export function Sidebar({ activePage, onNavigate, open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose }: SidebarProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activePage = getActivePageFromPath(location.pathname);
+
   const go = (page: PageId) => {
-    onNavigate(page);
+    navigate(PAGE_PATHS[page]);
     onClose();
   };
 
@@ -54,6 +75,7 @@ export function Sidebar({ activePage, onNavigate, open, onClose }: SidebarProps)
             Main
           </div>
           <NavItem icon={<LayoutDashboard className="h-4 w-4" />} label="Workspace" active={activePage === "workspace"} onClick={() => go("workspace")} />
+          <NavItem icon={<ImagePlus className="h-4 w-4" />} label="Image Generation" active={activePage === "image-generation"} onClick={() => go("image-generation")} />
 
           {/* Insights */}
           <div className="mb-1 mt-4 px-2.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--c-text-subtle)" }}>

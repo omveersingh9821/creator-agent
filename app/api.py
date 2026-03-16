@@ -260,3 +260,39 @@ async def api_user_results(uid: str) -> Dict[str, Any]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ── Image Generation ─────────────────────────────────────────────────────────
+
+
+class ImageGenRequest(BaseModel):
+    prompt: str
+
+
+class ImageGenResponse(BaseModel):
+    image_base64: str
+    prompt: str
+
+
+@app.post("/api/generate-image", response_model=ImageGenResponse)
+async def generate_image_endpoint(
+    request: ImageGenRequest,
+) -> ImageGenResponse:
+    """Generate an AI image from a text prompt.
+
+    Returns a base64-encoded PNG image along with the prompt used.
+    """
+    try:
+        from app.tools.image_gen_tool import generate_image  # pyre-ignore[21]
+
+        image_b64 = generate_image(request.prompt)
+
+        return ImageGenResponse(
+            image_base64=image_b64,
+            prompt=request.prompt,
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

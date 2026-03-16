@@ -11,3 +11,6 @@ export const API_BASE_URL =
 
 /** Endpoint path for structured content generation (MongoDB-backed). */
 export const GENERATE_CONTENT_ENDPOINT = "/api/generate-content-v2";
+
+/** Endpoint path for AI image generation. */
+export const GENERATE_IMAGE_ENDPOINT = "/api/generate-image";

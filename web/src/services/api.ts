@@ -6,7 +6,7 @@
  */
 
 import axios from "axios";
-import { API_BASE_URL, GENERATE_CONTENT_ENDPOINT } from "../constants/config";
+import { API_BASE_URL, GENERATE_CONTENT_ENDPOINT, GENERATE_IMAGE_ENDPOINT } from "../constants/config";
 import {
   GeneratedContentSchema,
   type GeneratedContent,
@@ -33,7 +33,21 @@ export async function generateContent(
   return GeneratedContentSchema.parse(data);
 }
 
+// ── Image Generation ─────────────────────────────────────────────────────────
+
+export interface ImageGenResponse {
+  image_base64: string;
+  prompt: string;
+}
+
+/** Generate an AI image from a text prompt */
+export async function generateImage(prompt: string): Promise<ImageGenResponse> {
+  const { data } = await apiClient.post(GENERATE_IMAGE_ENDPOINT, { prompt });
+  return data;
+}
+
 // ── MongoDB-backed data fetching ─────────────────────────────────────────────
+
 
 export interface GlobalUsage {
   total_requests: number;
