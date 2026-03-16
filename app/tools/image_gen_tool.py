@@ -42,8 +42,9 @@ def generate_image(prompt: str) -> str:
             print(f"Google Imagen Error: {e}. Falling back to dummy image.")
             pass
 
-    print("No valid image generation API keys found or all attempts failed. Falling back to dummy.")
-    return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+    # Fallback to Pollinations API (free, no key required)
+    print("API keys failed or missing. Falling back to free Pollinations API.")
+    return _generate_with_pollinations(prompt)
 
 
 def _generate_with_openai(prompt: str) -> str:
@@ -74,7 +75,7 @@ def _generate_with_google(prompt: str) -> str:
     client = genai.Client(api_key=GOOGLE_API_KEY)
 
     response = client.models.generate_images(
-        model="imagen-3.0-generate-002",
+        model="imagen-3.0-generate-001",
         prompt=prompt,
         config=genai.types.GenerateImagesConfig(
             number_of_images=1,
@@ -87,3 +88,27 @@ def _generate_with_google(prompt: str) -> str:
 
     image_bytes = response.generated_images[0].image.image_bytes
     return base64.b64encode(image_bytes).decode("utf-8")
+
+
+def _generate_with_pollinations(prompt: str) -> str:
+    """Generate an image using the free Pollinations.ai API as a fallback."""
+    import urllib.request
+    import urllib.parse
+
+    # URL encode the prompt
+    encoded_prompt = urllib.parse.quote(prompt)
+    
+    url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+    
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}
+    )
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            image_bytes = response.read()
+            return base64.b64encode(image_bytes).decode("utf-8")
+    except Exception as e:
+        print(f"Pollinations API failed: {e}. Returning dummy.")
+        return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
