@@ -76,7 +76,7 @@ export function PromptsTab({ onSelectPrompt, recentPrompts }: PromptsTabProps) {
               <button
                 key={i}
                 onClick={() => onSelectPrompt(prompt)}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-[13px] transition-colors"
+                className="cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-left text-[13px] transition-colors"
                 style={{ cursor: "pointer" }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "var(--c-raised)";

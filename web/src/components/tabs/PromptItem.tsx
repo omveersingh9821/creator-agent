@@ -13,7 +13,7 @@ export function PromptItem({ text, icon, selected = false, onClick }: PromptItem
   return (
     <button
       onClick={onClick}
-      className="group flex w-full items-start gap-3 rounded-lg p-3.5 text-left transition-all duration-200"
+      className="cursor-pointer group flex w-full items-start gap-3 rounded-lg p-3.5 text-left transition-all duration-200"
       style={{
         background: selected ? "color-mix(in srgb, var(--c-green) 10%, transparent)" : "var(--c-surface)",
         border: selected ? "1px solid var(--c-green-muted)" : "1px solid var(--c-border)",

@@ -24,7 +24,7 @@ export function Navbar({ onToggleSidebar, sidebarOpen }: NavbarProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
-          className="rounded-md p-1.5 lg:hidden"
+          className="cursor-pointer rounded-md p-1.5 lg:hidden"
           style={{ color: "var(--c-text-muted)" }}
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -46,7 +46,7 @@ export function Navbar({ onToggleSidebar, sidebarOpen }: NavbarProps) {
       {/* Right: Theme toggle */}
       <button
         onClick={toggleTheme}
-        className="flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors"
+        className="cursor-pointer flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors"
         style={{
           color: "var(--c-text-muted)",
           border: "1px solid var(--c-border)",

@@ -55,7 +55,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* Mobile overlay backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          className="cursor-pointer fixed inset-0 z-30 bg-black/50 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -124,7 +124,7 @@ function UserProfile() {
       </div>
       <button 
         onClick={() => logout()}
-        className="shrink-0 p-1.5 rounded-md transition-colors hover:bg-[color-mix(in_srgb,var(--c-red)_15%,transparent)] hover:text-[var(--c-red)]"
+        className="cursor-pointer shrink-0 p-1.5 rounded-md transition-colors hover:bg-[color-mix(in_srgb,var(--c-red)_15%,transparent)] hover:text-[var(--c-red)]"
         style={{ color: "var(--c-text-subtle)" }}
         title="Log out"
       >

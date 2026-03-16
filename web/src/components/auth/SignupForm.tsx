@@ -92,7 +92,7 @@ export function SignupForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2.5 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2.5 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         style={{ background: "var(--c-green)", color: "#fff" }}
       >
         {loading ? "Creating account..." : "Create Account"}

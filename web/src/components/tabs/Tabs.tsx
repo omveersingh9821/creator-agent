@@ -26,7 +26,7 @@ export function Tabs({ tabs, activeTab, onTabChange }: TabsProps) {
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 text-[13px] font-semibold transition-all duration-200"
+            className="cursor-pointer flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 text-[13px] font-semibold transition-all duration-200"
             style={{
               background: isActive ? "var(--c-raised)" : "transparent",
               color: isActive ? "var(--c-text)" : "var(--c-text-muted)",

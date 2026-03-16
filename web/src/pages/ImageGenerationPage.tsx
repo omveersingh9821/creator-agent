@@ -99,7 +99,7 @@ export function ImageGenerationPage() {
             <button
               type="submit"
               disabled={prompt.trim().length < 3 || isPending}
-              className="flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-white transition-all duration-200 disabled:opacity-40"
+              className="cursor-pointer flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-white transition-all duration-200 disabled:opacity-40"
               style={{
                 background: "linear-gradient(135deg, var(--c-purple), var(--c-blue))",
                 boxShadow: "0 2px 8px color-mix(in srgb, var(--c-purple) 40%, transparent)",
@@ -177,7 +177,7 @@ export function ImageGenerationPage() {
             </h2>
             <button
               onClick={() => { reset(); setPrompt(""); }}
-              className="text-[12px] font-medium transition-colors"
+              className="cursor-pointer text-[12px] font-medium transition-colors"
               style={{ color: "var(--c-purple)" }}
             >
               + New Image
@@ -202,7 +202,7 @@ export function ImageGenerationPage() {
               {/* Overlay Download Button */}
               <button
                 onClick={handleDownload}
-                className="absolute bottom-6 right-6 flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100"
+                className="cursor-pointer absolute bottom-6 right-6 flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100"
                 style={{
                   background: "linear-gradient(135deg, var(--c-green), color-mix(in srgb, var(--c-green) 70%, black))",
                 }}
