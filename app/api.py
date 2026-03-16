@@ -339,15 +339,16 @@ async def generate_travel_itinerary(request: TravelQuery):
     Given a user's natural language travel query, invoke the Langchain
     Travel Agent to search for hypothetical flights and hotels and return structured JSON.
     """
+    import asyncio
     from app.agents.travel_agent import run_travel_agent
-    
+
     try:
-        # Run the agent (this is synchronous; in production could be async)
-        result_dict = run_travel_agent(request.query)
-        
+        # run_travel_agent is synchronous — offload to a thread so we don't block the event loop
+        result_dict = await asyncio.to_thread(run_travel_agent, request.query)
+
         # Pydantic will validate this dictionary against our TravelItinerary schema
         return result_dict
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Travel Agent Error: {str(e)}")
 
