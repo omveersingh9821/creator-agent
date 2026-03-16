@@ -37,10 +37,10 @@ def create_agent():
         generate_image_idea,
     ]
 
-    # LangGraph's prebuilt react agent uses state_modifier for the system message
+    # LangGraph's prebuilt react agent uses prompt for the system message on this environment
     return create_react_agent(
         model=llm,
         tools=tools,
-        state_modifier=AGENT_SYSTEM_PROMPT,
+        prompt=AGENT_SYSTEM_PROMPT,
         debug=VERBOSE,
     )

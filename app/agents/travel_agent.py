@@ -125,7 +125,7 @@ def create_travel_agent():
     from app.core.llm_factory import get_llm
     llm = get_llm()
     # Using langgraph's prebuilt react agent instead of deprecated AgentExecutor
-    return create_react_agent(llm, tools, state_modifier=system_prompt)
+    return create_react_agent(llm, tools, prompt=system_prompt)
 
 def run_travel_agent(query: str) -> Dict[str, Any]:
     agent_executor = create_travel_agent()
