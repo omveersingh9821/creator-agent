@@ -70,11 +70,12 @@ class GenerateResponse(BaseModel):
 @app.post("/api/generate", response_model=GenerateResponse)
 async def generate_content(request: GenerateRequest) -> GenerateResponse:
     """Run the Creator Agent on the given topic."""
-    executor = _get_agent()
+    agent = _get_agent()
 
     try:
-        response: Dict[str, Any] = executor.invoke({"input": request.topic})
-        output = str(response.get("output", "No output generated."))
+        # LangGraph react agent invocation
+        response = agent.invoke({"messages": [("user", request.topic)]})
+        output = response["messages"][-1].content
         return GenerateResponse(result=output)
     
     except Exception as e:

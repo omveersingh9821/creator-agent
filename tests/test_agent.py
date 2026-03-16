@@ -23,7 +23,7 @@ class TestSettings(unittest.TestCase):
     def test_llm_provider_is_string(self) -> None:
         from app.config.settings import LLM_PROVIDER
         self.assertIsInstance(LLM_PROVIDER, str)
-        self.assertIn(LLM_PROVIDER, {"gemini", "openai"})
+        self.assertIn(LLM_PROVIDER, {"gemini", "openai", "anthropic"})
 
     def test_temperature_is_float(self) -> None:
         from app.config.settings import TEMPERATURE
