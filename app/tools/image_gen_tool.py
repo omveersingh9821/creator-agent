@@ -8,7 +8,7 @@ Returns a base64-encoded PNG image string.
 import base64
 
 
-from app.config.settings import OPENAI_API_KEY, GOOGLE_API_KEY  # pyre-ignore[21]
+from app.config.settings import OPENAI_API_KEY, GOOGLE_API_KEY, NANO_BANANA_API_KEY  # pyre-ignore[21]
 
 
 def generate_image(prompt: str) -> str:
@@ -27,6 +27,13 @@ def generate_image(prompt: str) -> str:
         ValueError: If no image generation API key is available.
         RuntimeError: If the image generation request fails.
     """
+    if NANO_BANANA_API_KEY:
+        try:
+            return _generate_with_nanobanana(prompt)
+        except Exception as e:
+            print(f"Nano Banana API Error: {e}. Falling back to OpenAI.")
+            pass
+
     if OPENAI_API_KEY:
         from openai import AuthenticationError  # pyre-ignore[21]
         try:
@@ -66,6 +73,38 @@ def _generate_with_openai(prompt: str) -> str:
     if not image_b64:
         raise RuntimeError("OpenAI returned empty image data.")
     return image_b64
+
+
+def _generate_with_nanobanana(prompt: str) -> str:
+    """Generate an image using the Nano Banana API."""
+    import urllib.request
+    import json
+
+    url = "https://api.nanobananaapi.ai/v1/images/generations"
+    headers = {
+        "Authorization": f"Bearer {NANO_BANANA_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "prompt": prompt,
+        "model": "nanobanana-pro",  # or standard model string
+        "response_format": "b64_json"
+    }
+    
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(data).encode("utf-8"),
+        headers=headers,
+        method="POST"
+    )
+    
+    with urllib.request.urlopen(req) as response:
+        result = json.loads(response.read().decode("utf-8"))
+        
+    if "data" in result and len(result["data"]) > 0 and "b64_json" in result["data"][0]:
+        return result["data"][0]["b64_json"]
+        
+    raise RuntimeError(f"Nano Banana returned unexpected format: {result}")
 
 
 def _generate_with_google(prompt: str) -> str:

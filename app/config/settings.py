@@ -23,6 +23,7 @@ LLM_PROVIDER: str = (os.getenv("LLM_PROVIDER") or "gemini").lower()
 GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY") or ""
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY") or ""
 ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY") or ""
+NANO_BANANA_API_KEY: str = os.getenv("NANO_BANANA_API_KEY") or ""
 
 # ── Model Parameters ─────────────────────────────────────────────────────────
 MODEL_NAME: str = os.getenv("MODEL_NAME") or "gemini-2.0-flash"
