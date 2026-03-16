@@ -8,7 +8,7 @@ Returns a base64-encoded PNG image string.
 import base64
 
 
-from app.config.settings import OPENAI_API_KEY, GOOGLE_API_KEY, NANO_BANANA_API_KEY  # pyre-ignore[21]
+from app.config.settings import OPENAI_API_KEY, GOOGLE_API_KEY  # pyre-ignore[21]
 
 
 def generate_image(prompt: str) -> str:
@@ -27,11 +27,11 @@ def generate_image(prompt: str) -> str:
         ValueError: If no image generation API key is available.
         RuntimeError: If the image generation request fails.
     """
-    if NANO_BANANA_API_KEY:
+    if GOOGLE_API_KEY:
         try:
             return _generate_with_nanobanana(prompt)
         except Exception as e:
-            print(f"Nano Banana API Error: {e}. Falling back to OpenAI.")
+            print(f"Nano Banana API Error: {e}. Falling back to Google Imagen.")
             pass
 
     if OPENAI_API_KEY:
@@ -82,7 +82,7 @@ def _generate_with_nanobanana(prompt: str) -> str:
 
     url = "https://api.nanobananaapi.ai/v1/images/generations"
     headers = {
-        "Authorization": f"Bearer {NANO_BANANA_API_KEY}",
+        "Authorization": f"Bearer {GOOGLE_API_KEY}",
         "Content-Type": "application/json"
     }
     data = {
