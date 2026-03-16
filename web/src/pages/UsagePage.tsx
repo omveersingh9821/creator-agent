@@ -35,7 +35,8 @@ export function UsagePage() {
   const total = usage?.total_requests ?? 0;
   const tokens = usage?.total_tokens_estimated ?? 0;
   const cost = (usage?.estimated_cost_usd ?? 0).toFixed(4);
-  const model = usage?.model || "claude-sonnet-4-20250514";
+  const fullModelStr = usage?.model;
+  const model = fullModelStr?.split("-")[0]; // Just extract the first word (e.g. "claude")
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
@@ -49,7 +50,7 @@ export function UsagePage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <UsageCard icon={<Activity className="h-5 w-5" />} label="Total Requests" value={String(total)} accent="var(--c-blue)" />
         <UsageCard icon={<Layers className="h-5 w-5" />} label="Tokens Used" value={`~${tokens.toLocaleString()}`} accent="var(--c-purple)" />
-        <UsageCard icon={<Cpu className="h-5 w-5" />} label="Model" value={model} accent="var(--c-green)" />
+        <UsageCard icon={<Cpu className="h-5 w-5" />} label="Model" value={model || "-"} accent="var(--c-green)" />
         <UsageCard icon={<DollarSign className="h-5 w-5" />} label="Est. Cost" value={`$${cost}`} accent="var(--c-orange)" />
       </div>
     </div>

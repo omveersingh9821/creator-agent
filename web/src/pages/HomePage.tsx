@@ -9,8 +9,8 @@
  *   - /recent        → Generation history list (fetched from MongoDB)
  */
 
-import { useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Zap, AlertTriangle } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Sidebar } from "../components/Sidebar";
@@ -37,7 +37,16 @@ function WorkspacePage({
 }) {
   const { mutate, data, isPending, error } = useGenerateContent();
   const { user } = useAuth();
+  const location = useLocation();
   const [topicOverride, setTopicOverride] = useState("");
+
+  useEffect(() => {
+    if (location.state?.topic) {
+      setTopicOverride(location.state.topic);
+      // Clear the state so it doesn't trigger again on reload
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state?.topic]);
 
   const handleGenerate = (topic: string) => {
     mutate({
@@ -115,13 +124,12 @@ export function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleSelectPrompt = (_prompt: string) => {
-    // Navigate to workspace with prompt
-    navigate("/");
+  const handleSelectPrompt = (prompt: string) => {
+    navigate("/", { state: { topic: prompt } });
   };
 
-  const handleSelectTopic = (_topic: string) => {
-    navigate("/");
+  const handleSelectTopic = (topic: string) => {
+    navigate("/", { state: { topic } });
   };
 
   return (
