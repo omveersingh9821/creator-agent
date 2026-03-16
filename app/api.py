@@ -300,6 +300,15 @@ class TravelItinerary(BaseModel):
     hotels: List[HotelModel] = []
 
 
+class BookFlightRequest(BaseModel):
+    flight: FlightModel
+
+class BookFlightResponse(BaseModel):
+    success: bool
+    message: str
+    booking_reference: str
+
+
 @app.post("/api/generate-image", response_model=ImageGenResponse)
 async def generate_image_endpoint(
     request: ImageGenRequest,
@@ -342,3 +351,25 @@ async def generate_travel_itinerary(request: TravelQuery):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Travel Agent Error: {str(e)}")
 
+
+@app.post("/api/agents/travel/book", response_model=BookFlightResponse)
+async def book_flight(request: BookFlightRequest):
+    """
+    Mock endpoint to 'book' a flight.
+    In a real app, this would integrate with an airline or GDS API.
+    """
+    import random
+    import string
+    
+    # Generate a random 6-character booking reference
+    booking_ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    
+    # Simulate a small delay for booking
+    import asyncio
+    await asyncio.sleep(1.5)
+    
+    return BookFlightResponse(
+        success=True,
+        message=f"Successfully booked flight {request.flight.airline} {request.flight.flight_number}!",
+        booking_reference=booking_ref
+    )

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plane, AlertTriangle, Building2, Banknote } from "lucide-react";
-import { useTravelAgent } from "../hooks/useTravelAgent";
+import { useTravelAgent, useBookFlight, Flight } from "../hooks/useTravelAgent.ts";
 import { Loader } from "../components/ui/Loader";
 
 export function TravelPage() {
@@ -10,7 +10,16 @@ export function TravelPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+    setBookedFlight(null);
     mutate(query);
+  };
+
+  const { mutate: bookFlight, isPending: isBooking, error: bookError, data: bookData } = useBookFlight();
+  const [bookedFlight, setBookedFlight] = useState<Flight | null>(null);
+
+  const handleBookFlight = (flight: Flight) => {
+    setBookedFlight(flight);
+    bookFlight(flight);
   };
 
   return (
@@ -51,6 +60,28 @@ export function TravelPage() {
             Search
           </button>
         </form>
+
+        {/* ── Quick Prompts ── */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          {[
+            "Find me a cheap weekend trip to Miami from NYC and a hotel.",
+            "I need flights from London to Tokyo for 2 weeks in October.",
+            "Look for a romantic luxury resort in Maldives for 5 nights.",
+          ].map((promptText, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setQuery(promptText);
+                mutate(promptText);
+              }}
+              disabled={isPending}
+              className="cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors hover:bg-[var(--c-border)] disabled:opacity-50"
+              style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)", color: "var(--c-text-muted)" }}
+            >
+              {promptText}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Status & Errors ── */}
@@ -76,6 +107,34 @@ export function TravelPage() {
       {/* ── Results ── */}
       {data && !isPending && (
         <div className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-10">
+
+          {/* Booking Success Message */}
+          {bookData && bookData.success && bookedFlight && (
+            <div className="rounded-xl p-4 flex items-start gap-4" style={{ background: "color-mix(in srgb, var(--c-green) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--c-green) 20%, transparent)", color: "var(--c-green)" }}>
+              <div className="rounded-full bg-green-500/20 p-2 text-green-600 dark:text-green-500">
+                <Plane className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-green-700 dark:text-green-400">Flight Successfully Booked!</h3>
+                <p className="mt-1 text-sm font-medium opacity-90 text-green-800 dark:text-green-300">
+                  {bookData.message}
+                </p>
+                <div className="mt-3 inline-flex rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider" style={{ background: "color-mix(in srgb, var(--c-green) 15%, transparent)" }}>
+                  Ref: {bookData.booking_reference}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {bookError && (
+             <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: "color-mix(in srgb, var(--c-red) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--c-red) 20%, transparent)", color: "var(--c-red)" }}>
+             <AlertTriangle className="h-5 w-5 shrink-0" />
+             <div>
+               <h3 className="font-semibold">Booking Failed</h3>
+               <p className="mt-1 text-[13px] opacity-90">{bookError.message}</p>
+             </div>
+           </div>
+          )}
           
           {/* AI Summary */}
           <div className="rounded-2xl p-6" style={{ background: "color-mix(in srgb, var(--c-blue) 5%, transparent)", border: "1px solid color-mix(in srgb, var(--c-blue) 15%, transparent)" }}>
@@ -115,10 +174,20 @@ export function TravelPage() {
 
                     <div className="mt-5 flex items-end justify-between border-t pt-4" style={{ borderColor: "var(--c-border)" }}>
                       <span className="text-[13px] font-medium" style={{ color: "var(--c-text-muted)" }}>Economy Class</span>
-                      <span className="text-2xl font-bold flex items-center gap-1 text-green-600 dark:text-green-500">
-                        <Banknote className="h-5 w-5" />
-                        ${flight.price}
-                      </span>
+                      <div className="flex items-center gap-4">
+                        <span className="text-2xl font-bold flex items-center gap-1 text-green-600 dark:text-green-500">
+                          <Banknote className="h-5 w-5" />
+                          ${flight.price}
+                        </span>
+                        <button
+                          onClick={() => handleBookFlight(flight)}
+                          disabled={isBooking && bookedFlight?.flight_number === flight.flight_number}
+                          className="cursor-pointer rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
+                          style={{ background: "var(--c-purple)", color: "white" }}
+                        >
+                          {isBooking && bookedFlight?.flight_number === flight.flight_number ? "Booking..." : "Book Now"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { travelApi } from "../services/travelApi";
+import { travelApi } from "../services/travelApi.ts";
 
 export interface Flight {
   airline: string;
@@ -30,6 +30,15 @@ export function useTravelAgent() {
     mutationFn: async (query: string) => {
       const data = await travelApi.searchTravel(query);
       return data as TravelItinerary;
+    },
+  });
+}
+
+export function useBookFlight() {
+  return useMutation({
+    mutationFn: async (flight: Flight) => {
+      const data = await travelApi.bookFlight(flight);
+      return data;
     },
   });
 }

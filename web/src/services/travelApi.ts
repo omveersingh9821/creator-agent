@@ -23,4 +23,27 @@ export const travelApi = {
 
     return response.json();
   },
+
+  async bookFlight(flight: any) {
+    const response = await fetch(`${TRAVEL_AGENT_ENDPOINT}/book`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ flight }),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "Failed to book flight";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.detail || errorMessage;
+      } catch (e) {
+        // Ignore JSON parse errors for non-JSON responses
+      }
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  },
 };

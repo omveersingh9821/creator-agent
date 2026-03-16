@@ -26,7 +26,7 @@ import { UsagePage } from "./UsagePage";
 import { PromptsPage } from "./PromptsPage";
 import { RecentRequestsPage } from "./RecentRequestsPage";
 import { ImageGenerationPage } from "./ImageGenerationPage";
-import { TravelPage } from "./TravelPage";
+import { TravelPage } from "./TravelPage.tsx";
 import { useGenerateContent } from "../hooks/useGenerateContent";
 import { useAuth } from "../auth/AuthContext";
 
