@@ -110,5 +110,5 @@ def _generate_with_pollinations(prompt: str) -> str:
             image_bytes = response.read()
             return base64.b64encode(image_bytes).decode("utf-8")
     except Exception as e:
-        print(f"Pollinations API failed: {e}. Returning dummy.")
-        return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+        print(f"Pollinations API failed: {e}. Raising error.")
+        raise RuntimeError("Image generation failed due to API limits or network issues. Please check your keys or try again.")

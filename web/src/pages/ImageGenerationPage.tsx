@@ -192,13 +192,24 @@ export function ImageGenerationPage() {
             }}
           >
             {/* Image */}
-            <div className="relative flex items-center justify-center p-4" style={{ background: "var(--c-overlay)" }}>
+            <div className="group relative flex items-center justify-center p-4" style={{ background: "var(--c-overlay)" }}>
               <img
                 src={`data:image/png;base64,${data.image_base64}`}
                 alt={data.prompt}
                 className="max-h-[512px] w-auto rounded-lg shadow-lg"
                 style={{ maxWidth: "100%" }}
               />
+              {/* Overlay Download Button */}
+              <button
+                onClick={handleDownload}
+                className="absolute bottom-6 right-6 flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100"
+                style={{
+                  background: "linear-gradient(135deg, var(--c-green), color-mix(in srgb, var(--c-green) 70%, black))",
+                }}
+              >
+                <Download className="h-4 w-4" />
+                Download
+              </button>
             </div>
 
             {/* Actions bar */}
@@ -216,18 +227,6 @@ export function ImageGenerationPage() {
               </p>
               <div className="flex shrink-0 items-center gap-2">
                 <CopyButton text={data.prompt} />
-                <button
-                  onClick={handleDownload}
-                  className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium transition-all duration-200"
-                  style={{
-                    background: "color-mix(in srgb, var(--c-green) 12%, transparent)",
-                    color: "var(--c-green)",
-                    border: "1px solid color-mix(in srgb, var(--c-green) 30%, transparent)",
-                  }}
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Download
-                </button>
               </div>
             </div>
           </div>
