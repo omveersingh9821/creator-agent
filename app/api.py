@@ -12,6 +12,7 @@ from typing import Dict, Any, Optional
 from fastapi import FastAPI, HTTPException  # pyre-ignore[21]
 from fastapi.middleware.cors import CORSMiddleware  # pyre-ignore[21]
 from pydantic import BaseModel  # pyre-ignore[21]
+from typing import List  # pyre-ignore[21]
 
 # NOTE: agent import is LAZY — LangChain is imported only when needed
 # so Vercel serverless cold starts stay fast for lightweight endpoints.
@@ -273,6 +274,32 @@ class ImageGenResponse(BaseModel):
     prompt: str
 
 
+# ─── Travel Pydantic Models ────────────────────────────────────────────────────────
+class TravelQuery(BaseModel):
+    query: str
+
+class FlightModel(BaseModel):
+    airline: str
+    flight_number: str
+    departure_time: str
+    arrival_time: str
+    duration: str
+    price: int
+    stops: int
+
+class HotelModel(BaseModel):
+    name: str
+    stars: int
+    rating: float
+    price_per_night: int
+    amenities: List[str]
+
+class TravelItinerary(BaseModel):
+    ai_summary: str
+    flights: List[FlightModel] = []
+    hotels: List[HotelModel] = []
+
+
 @app.post("/api/generate-image", response_model=ImageGenResponse)
 async def generate_image_endpoint(
     request: ImageGenRequest,
@@ -295,4 +322,23 @@ async def generate_image_endpoint(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/agents/travel", response_model=TravelItinerary)
+async def generate_travel_itinerary(request: TravelQuery):
+    """
+    Given a user's natural language travel query, invoke the Langchain
+    Travel Agent to search for hypothetical flights and hotels and return structured JSON.
+    """
+    from app.agents.travel_agent import run_travel_agent
+    
+    try:
+        # Run the agent (this is synchronous; in production could be async)
+        result_dict = run_travel_agent(request.query)
+        
+        # Pydantic will validate this dictionary against our TravelItinerary schema
+        return result_dict
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Travel Agent Error: {str(e)}")
 

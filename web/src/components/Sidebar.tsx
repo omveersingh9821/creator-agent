@@ -12,14 +12,16 @@ import {
   History,
   Settings,
   ImagePlus,
+  PlaneTakeoff,
 } from "lucide-react";
 
-export type PageId = "workspace" | "image-generation" | "usage" | "prompts" | "recent";
+export type PageId = "workspace" | "image-generation" | "travel" | "usage" | "prompts" | "recent";
 
 /** Map each page ID to its URL path. */
 const PAGE_PATHS: Record<PageId, string> = {
   workspace: "/",
   "image-generation": "/image-generation",
+  travel: "/travel",
   usage: "/usage",
   prompts: "/prompts",
   recent: "/recent",
@@ -76,6 +78,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </div>
           <NavItem icon={<LayoutDashboard className="h-4 w-4" />} label="Workspace" active={activePage === "workspace"} onClick={() => go("workspace")} />
           <NavItem icon={<ImagePlus className="h-4 w-4" />} label="Image Generation" active={activePage === "image-generation"} onClick={() => go("image-generation")} />
+          <NavItem icon={<PlaneTakeoff className="h-4 w-4" />} label="Travel Agent" active={activePage === "travel"} onClick={() => go("travel")} />
 
           {/* Insights */}
           <div className="mb-1 mt-4 px-2.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--c-text-subtle)" }}>

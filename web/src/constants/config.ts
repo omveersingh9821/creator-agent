@@ -10,7 +10,8 @@ export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "";
 
 /** Endpoint path for structured content generation (MongoDB-backed). */
-export const GENERATE_CONTENT_ENDPOINT = "/api/generate-content-v2";
+export const GENERATE_CONTENT_ENDPOINT = `${API_BASE_URL}/api/generate`;
 
 /** Endpoint path for AI image generation. */
-export const GENERATE_IMAGE_ENDPOINT = "/api/generate-image";
+export const GENERATE_IMAGE_ENDPOINT = `${API_BASE_URL}/api/generate-image`;
+export const TRAVEL_AGENT_ENDPOINT = `${API_BASE_URL}/api/agents/travel`;

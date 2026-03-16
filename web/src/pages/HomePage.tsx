@@ -26,6 +26,7 @@ import { UsagePage } from "./UsagePage";
 import { PromptsPage } from "./PromptsPage";
 import { RecentRequestsPage } from "./RecentRequestsPage";
 import { ImageGenerationPage } from "./ImageGenerationPage";
+import { TravelPage } from "./TravelPage";
 import { useGenerateContent } from "../hooks/useGenerateContent";
 import { useAuth } from "../auth/AuthContext";
 
@@ -153,6 +154,7 @@ export function HomePage() {
             <Routes>
               <Route index element={<WorkspacePage onSelectPrompt={handleSelectPrompt} />} />
               <Route path="image-generation" element={<ImageGenerationPage />} />
+              <Route path="travel" element={<TravelPage />} />
               <Route path="usage" element={<UsagePage />} />
               <Route path="prompts" element={<PromptsPage onSelectPrompt={handleSelectPrompt} />} />
               <Route path="recent" element={<RecentRequestsPage onSelectTopic={handleSelectTopic} />} />
