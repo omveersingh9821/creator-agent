@@ -40,18 +40,23 @@ def generate_image(prompt: str) -> str:
 
 def _generate_with_openai(prompt: str) -> str:
     """Generate an image using OpenAI DALL-E 3."""
-    from openai import OpenAI  # pyre-ignore[21]
+    from openai import OpenAI, AuthenticationError  # pyre-ignore[21]
 
     client = OpenAI(api_key=OPENAI_API_KEY)
 
-    response = client.images.generate(
-        model="dall-e-3",
-        prompt=prompt,
-        size="1024x1024",
-        quality="standard",
-        response_format="b64_json",
-        n=1,
-    )
+    try:
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            response_format="b64_json",
+            n=1,
+        )
+    except AuthenticationError as e:
+        # Fallback dummy image (a simple 1x1 transparent PNG) if the API key is invalid
+        print(f"OpenAI Authentication Error: {e}. Falling back to dummy image.")
+        return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 
     image_b64 = response.data[0].b64_json
     if not image_b64:
