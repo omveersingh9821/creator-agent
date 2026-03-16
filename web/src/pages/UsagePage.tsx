@@ -35,7 +35,7 @@ export function UsagePage() {
   const total = usage?.total_requests ?? 0;
   const tokens = usage?.total_tokens_estimated ?? 0;
   const cost = (usage?.estimated_cost_usd ?? 0).toFixed(4);
-  const model = usage?.model ?? "—";
+  const model = usage?.model || "claude-sonnet-4-20250514";
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
