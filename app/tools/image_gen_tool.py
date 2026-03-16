@@ -94,21 +94,37 @@ def _generate_with_pollinations(prompt: str) -> str:
     """Generate an image using the free Pollinations.ai API as a fallback."""
     import urllib.request
     import urllib.parse
+    import urllib.error
+    import time
+    import random
 
     # URL encode the prompt
     encoded_prompt = urllib.parse.quote(prompt)
-    
-    url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+
+    # Added random seed to bypass caching and some basic rate limits
+    seed = random.randint(1, 100000)
+    url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={seed}&width=1024&height=1024&nologo=True"
     
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}
+        headers={"User-Agent": f"CreatorAgent-FallbackClient-{seed}"}
     )
     
-    try:
-        with urllib.request.urlopen(req) as response:
-            image_bytes = response.read()
-            return base64.b64encode(image_bytes).decode("utf-8")
-    except Exception as e:
-        print(f"Pollinations API failed: {e}. Raising error.")
-        raise RuntimeError("Image generation failed due to API limits or network issues. Please check your keys or try again.")
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(req) as response:
+                image_bytes = response.read()
+                return base64.b64encode(image_bytes).decode("utf-8")
+        except urllib.error.HTTPError as e:
+            print(f"Pollinations API HTTP error on attempt {attempt + 1}: {e.code} {e.reason}")
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)  # Exponential backoff: 1s, 2s
+            else:
+                print(f"Pollinations API failed after {max_retries} attempts. Raising error.")
+                raise RuntimeError("Image generation failed due to API limits or network issues. Please check your keys or try again.")
+        except Exception as e:
+            print(f"Pollinations API network error: {e}. Raising error.")
+            raise RuntimeError("Image generation failed due to API limits or network issues. Please check your keys or try again.")
+    
+    raise RuntimeError("Image generation failed due to API limits.")
