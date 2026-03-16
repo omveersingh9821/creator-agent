@@ -243,6 +243,28 @@ async def api_usage() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/debug-env")
+async def debug_env():
+    import os
+    import sys
+    import inspect
+    try:
+        import langgraph
+        from langgraph.prebuilt import create_react_agent
+        lg_version = getattr(langgraph, "__version__", "unknown")
+        sig = str(inspect.signature(create_react_agent))
+    except Exception as e:
+        lg_version = f"Error: {str(e)}"
+        sig = "Error"
+
+    return {
+        "python_version": sys.version,
+        "langgraph_version": lg_version,
+        "create_react_agent_signature": sig,
+        "env_vars": {k: "set" for k in os.environ.keys() if "API_KEY" in k or k == "LLM_PROVIDER"}
+    }
+
+
 @app.get("/api/user/{uid}/requests")
 async def api_user_requests(uid: str) -> Dict[str, Any]:
     """Return recent requests for a user."""
